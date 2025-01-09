@@ -1,0 +1,32 @@
+<!-- re-crawler.html -->
+<html>
+    <head>
+        <title>重新爬取京东比价商品信息</title>
+    </head>
+    <body>
+        <h2>重新爬取京东比价商品信息</h2>
+        <button id="btn-re-crawler">重新爬取</button>
+        <div id="result"></div>
+        <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script>
+            $(function() {
+                $('#btn-re-crawler').click(function() {
+                    $.ajax({
+                        url: '/re-crawler',
+                        type: 'POST',
+                        success: function(resp) {
+                            $('#result').text(resp.message);
+                        },
+                        error: function(err) {
+                            $('#result').text('请求失败：' + err.statusText);
+                        }
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>
+
+
+
+

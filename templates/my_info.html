@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>个人中心</title>
+    <link rel="stylesheet" href="/static/component/pear/css/pear.css" />
+  </head>
+  <body class="pear-container">
+    <div class="layui-card">
+      <div class="layui-card-body">
+        <div id="currentTableId">
+          <div class="cloud-card-component">
+            <div class="layui-row layui-col-space30">
+              <div id="1" onclick="cardTableCheckedCard(currentTableId,this)" class="layui-col-md12 ew-datagrid-item layui-table-click" data-index="0" data-number="1">
+                <div class="project-list-item">
+                  <div class="project-list-item-body">
+                    <h2>修改个人信息！</h2>
+
+                    <form class="layui-form" action="/accounts/my_info" method="post" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      <div class="layui-form-item">
+                        <label class="layui-form-label">用户名</label>
+                        <div class="layui-input-block">
+                          <input type="text" name="username" value="{{ request.user.username }}" required lay-verify="required" placeholder="请输入输入框内容" autocomplete="off" class="layui-input" />
+                        </div>
+                      </div>
+                      <div class="layui-form-item">
+                        <label class="layui-form-label">手机</label>
+                        <div class="layui-input-block">
+                          <input type="text" name="mobile" value="{{ request.user.mobile }}" required lay-verify="required" placeholder="请输入输入框内容" autocomplete="off" class="layui-input" />
+                        </div>
+                      </div>
+                      <div class="layui-form-item">
+                        <label class="layui-form-label">邮箱</label>
+                        <div class="layui-input-block">
+                          <input type="text" name="email" value="{{ request.user.email }}" required lay-verify="required" placeholder="请输入输入框内容" autocomplete="off" class="layui-input" />
+                        </div>
+                      </div>
+                      <div class="layui-form-item">
+                        <label class="layui-form-label">头像</label>
+                        <button id="xiugai" type="button">修改</button>
+                        {% if request.user.header_image %}
+                          <img alt="aaa" width="100" height="100" src="{{ request.user.header_image.url }}" />
+                        {% else %}
+                          <img alt="aaa" width="100" height="100" src="/media/img/OIP-C.jpg" />
+                        {% endif %}
+
+                      </div>
+                      <div class="layui-form-item">
+                                    <label class="layui-form-label">密码</label>
+                                    <div class="layui-input-block">
+                                      <input type="password" name="password" value=""  lay-require="false" placeholder="请输入输入框内容" autocomplete="off" class="layui-input">
+                                    </div>
+                                  </div>
+                      <div class="layui-form-item">
+                        <div class="layui-input-block">
+                          <button class="layui-btn" lay-submit lay-filter="formDemo" type="submit">立即提交</button>
+                          <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="/static/component/layui/layui.js"></script>
+    <script src="/static/component/pear/pear.js"></script>
+    <script>
+    $('#xiugai').click(function(){
+        $(this).parent().html('<label class="layui-form-label">头像</label><input type="file" name="input_img" value="" />')
+    })
+    layui.use(['table', 'layer', 'form', 'jquery', 'card'], function () {
+        {% if msg %}
+            layer.msg('{{ msg }}');
+        {% endif %}
+    })
+</script>
+  </body>
+</html>

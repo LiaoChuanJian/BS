@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Login Page</title>
+    <!-- 样式文件 -->
+    <link rel="stylesheet" href="/static/component/pear/css/pear.css" />
+    <link rel="stylesheet" href="/static/admin/css/other/login.css" />
+</head>
+<!-- 代码结构 -->
+<body background="/static/admin/images/background.svg" style="background-size: cover;">
+    <form class="layui-form" action="/accounts/login" method="post">
+        {% csrf_token %}
+         <div class="layui-form-item">
+            <img class="logo" src="/static/admin/images/logo.png" />
+            <div class="title">登录</div>
+            <div class="desc" style="font-size: 40px">商品比价网站</div>
+        </div>
+
+        <div class="layui-form-item">
+            <input name="username" placeholder="账 户" lay-verify="required" value="{{ username }}" hover class="layui-input" />
+        </div>
+        <div class="layui-form-item">
+            <input name="password" type="password" placeholder="密 码" lay-verify="required" value="{{ password }}" hover class="layui-input" />
+        </div>
+
+        <div class="layui-form-item">
+            <button type="submit" class="pear-btn pear-btn-success login" lay-submit lay-filter="login">登 录</button>
+        </div>
+        <div class="layui-form-item">
+            <button type="button" class="pear-btn pear-btn-success login" lay-submit lay-filter="login" onclick="goReguster()">注 册</button>
+        </div>
+    </form>
+    <!-- 资源引入 -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="/static/component/layui/layui.js"></script>
+    <script src="/static/component/pear/pear.js"></script>
+    <script>
+        // layui 使用的 JavaScript
+        layui.use(['form', 'button'], function() {
+            var form = layui.form;
+            var button = layui.button;
+
+        });
+    </script>
+
+    <script>
+        {% if errorinfo %}
+            layer.msg("{{ errorinfo }}");  // 如果有错误信息，弹出提示
+        {% endif %}
+        function goReguster(){
+            window.location.href="/accounts/register";  // 跳转到注册页面
+        }
+    </script>
+</body>
+</html>

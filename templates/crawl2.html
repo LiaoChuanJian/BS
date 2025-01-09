@@ -1,0 +1,42 @@
+<!-- crawl.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>爬虫页面</title>
+  </head>
+  <body>
+    <form>
+      {% csrf_token %}
+      <label for="content">请输入需要爬取的内容：</label>
+      <input type="text" id="content" name="content" required />
+      <button type="submit" id="start-btn">开始爬取</button>
+    </form>
+    <div id="result-div"></div>
+    <div id="loading" style="width: 250px; height: 50px; display: none;">loading。。。。。。</div>
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.9.1.js"></script>
+    <script type="text/javascript">
+      $(function () {
+        $('#start-btn').click(function (event) {
+          event.preventDefault() // 阻止表单自动提交
+          var content = $('#content').val() // 获取输入框中的值
+          $('#loading').show()
+          $.ajax({
+            url: '/pa_suning',
+            type: 'POST',
+            data: {
+              csrfmiddlewaretoken: '{{ csrf_token }}',
+              key: content // 发送数据到后端
+            },
+            success: function (data) {
+              // 请求成功后，将返回的数据显示到页面中
+              $('#loading').hide()
+              $('#result-div').html(data['result'])
+            }
+          })
+        })
+      })
+    </script>
+  </body>
+</html>

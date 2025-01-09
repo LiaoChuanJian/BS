@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>商品比价</title>
+    <link rel="stylesheet" href="/static/component/pear/css/pear.css" />
+    <link rel="stylesheet" href="/static/admin/css/other/result.css" />
+  </head>
+  <body class="pear-container">
+       <div class="search-box">
+
+            <input id="search-input" type="text" placeholder="请输入商品名称进行搜索">
+            <button id="search-btn" class="search-btn pear-btn pear-btn-primary">搜索</button>
+        </div>
+    <div class="layui-row layui-col-space10">
+      <div class="layui-col-md12">
+        <div class="layui-card">
+          <div class="layui-card-body">
+            <div id="column1" style="min-height:400px;"></div>
+          </div>
+        </div>
+
+        <div class="layui-card">
+          <div class="layui-card-header">高价榜</div>
+          <div class="layui-card-body">
+            <ul class="pear-card-status">
+              {% for goods in price_goods %}
+                <li>
+                  <p>
+                    <a href="{{ goods.goods_url }}" target="_blank">{{ goods.jd_name }}</a>
+                  </p>
+                  <span>店名：{{ goods.jd_shop }}</span>
+                  <span>价格：{{ goods.jd_price }}元</span>
+                </li>
+                <hr />
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+
+        <div class="layui-card">
+          <div class="layui-card-body">
+            <div id="column2" style="min-height:400px;"></div>
+          </div>
+        </div>
+
+        <div class="layui-card">
+          <div class="layui-card-header">好评榜</div>
+          <div class="layui-card-body">
+            <ul class="pear-card-status1">
+              {% for goods in goodcomment_goods %}
+                <li>
+                  <p>
+                    <a href="{{ goods.goods_url }}" target="_blank">{{ goods.jd_name }}</a>
+                  </p>
+                  <span>店名：{{ goods.jd_shop }}</span>
+                  <span>价格：{{ goods.jd_price }}元</span>
+                </li>
+                <hr />
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+
+        <div class="layui-card">
+          <div class="layui-card-body">
+            <div id="column3" style="min-height:400px;"></div>
+          </div>
+        </div>
+
+        <div class="layui-card">
+          <div class="layui-card-header">低价榜</div>
+          <div class="layui-card-body">
+            <ul class="pear-card-status2">
+              {% for goods in price_min_goods %}
+                <li>
+                  <p>
+                    <a href="{{ goods.goods_url }}" target="_blank">{{ goods.jd_name }}</a>
+                  </p>
+                  <span>店名：{{ goods.jd_shop }}</span>
+                  <span>价格：{{ goods.jd_price }}元</span>
+                </li>
+                <hr />
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+
+        <div class="layui-card">
+          <div class="layui-card-body">
+            <div id="column4" style="min-height:400px;"></div>
+          </div>
+        </div>
+
+        <div class="layui-card">
+          <div class="layui-card-header">差评榜</div>
+          <div class="layui-card-body">
+            <ul class="pear-card-status4">
+              {% for goods in good_goods %}
+                <li>
+                  <p>
+                    <a href="{{ goods.goods_url }}" target="_blank">{{ goods.jd_name }}</a>
+                  </p>
+                  <span>店名：{{ goods.jd_shop }}</span>
+                  <span>差评数：{{ goods.jd_poorcomment }}</span>
+                </li>
+                <hr />
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/static/component/layui/layui.js"></script>
+    <script src="/static/component/pear/pear.js"></script>
+    <script>
+        layui.use(['echarts'], function() {
+            let echarts = layui.echarts;
+
+            var column1 = echarts.init(document.getElementById('column1'));
+                option = {
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow' ,
+                            textStyle: {
+                                color: '#fff',
+                                fontSize: '26'
+                            },
+                        }
+                    },
+                    legend: {
+                        top:'5%',
+                        right:'10%',
+                        data: ['高价榜'],
+                        textStyle:{
+                            fontSize:12,
+                            color:'#808080'
+                        },
+                        icon:'rect'
+                    },
+                    grid: {
+                        top:60,
+                        left:50,
+                        bottom:60,
+                        right:60
+                    },
+                    xAxis: [{
+                        type: 'category',
+                        axisTick:{
+                            show:false
+                        },
+                        axisLine:{
+                            show:false
+                        },
+                        axisLabel:{
+                            color:'#4D4D4D',
+                            fontSize:14,
+                            margin:21,
+                            interval:0,
+                            rotate:0,
+
+                            fontWeight:'bold'
+                        },
+                        data: {{ price_x | safe }},
+                    }],
+                    yAxis: [{
+                        name:'单位：元',
+                        nameTextStyle:{
+                            color:'#808080',
+                            fontSize:12,
+                            padding:[0, 0, 0, -5]
+                        },
+                        max: function(value) {
+                            if(value.max<5){
+                                return 5
+                            }else{
+                                return value.max
+                            }
+                        },
+                        type: 'value',
+                        axisLine:{
+                            show:false
+                        },
+                        axisLabel:{
+                            color:'#808080',
+                            fontSize:12,
+                            interval:0,
+                            rotate:0,
+                            margin:5
+                        },
+                        splitLine:{
+                            show:false
+                        },
+                        axisTick:{
+                            show:false
+                        }
+                    }],
+                    series: [
+                        {
+                            name: '高价榜',
+                            type: 'bar',
+                            label:{
+                                show:true,
+                                position:'top',
+                                fontSize:14,
+                                color:'#8A2BE2',
+                                fontWeight:'bold'
+                            },
+                            barMaxWidth:60,
+                            itemStyle:{
+                                color: {
+                                    type: 'linear',
+                                    x: 0,
+                                    y: 0,
+                                    x2: 0,
+                                    y2: 1,
+                                    colorStops: [{
+                                        offset: 0, color: '#8A2BE2' // 0% 处的颜色
+                                    }, {
+                                        offset: 1, color: '#CCF2FF' // 100% 处的颜色
+                                    }]
+                                }
+                            },
+                            data: {{ price_y | safe }}
+                        }
+                    ]
+                };
+
+            column1.setOption(option);
+
+            window.onresize = function() {
+                column1.resize();
+            }
+
+            var column2 = echarts.init(document.getElementById('column2'));
+                option2 = {
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow' ,
+                            textStyle: {
+                                color: '#fff',
+                                fontSize: '26'
+                            },
+                        }
+                    },
+                    legend: {
+                        top:'5%',
+                        right:'10%',
+                        data: ['好评榜'],
+                        textStyle:{
+                            fontSize:12,
+                            color:'#808080'
+                        },
+                        icon:'rect'
+                    },
+                    grid: {
+                        top:60,
+                        left:50,
+                        bottom:60,
+                        right:60
+                    },
+                    xAxis: [{
+                        type: 'category',
+                        axisTick:{
+                            show:false
+                        },
+                        axisLine:{
+                            show:false
+                        },
+                        axisLabel:{
+                            color:'#4D4D4D',
+                            fontSize:14,
+                            margin:21,
+                            interval:0,
+                            rotate:0,
+                            fontWeight:'bold'
+                        },
+                        data: {{ goodcomment_x | safe }},
+
+                    }],
+                    yAxis: [{
+                        name:'单位：个',
+                        nameTextStyle:{
+                            color:'#808080',
+                            fontSize:12,
+                            padding:[0, 0, 0, -5]
+                        },
+                        max: function(value) {
+                            if(value.max<5){
+                                return 5
+                            }else{
+                                return value.max
+                            }
+                        },
+                        type: 'value',
+                        axisLine:{
+                            show:false
+                        },
+                        axisLabel:{
+                            color:'#808080',
+                            fontSize:12,
+                            interval:0,
+                            rotate:0,
+                            margin:5
+                        },
+                        splitLine:{
+                            show:false
+                        },
+                        axisTick:{
+                            show:false
+                        }
+                    }],
+                    series: [
+                        {
+                            name: '好评榜',
+                            type: 'bar',
+                            label:{
+                                show:true,
+                                position:'top',
+                                fontSize:14,
+                                color:'#8A2BE2',
+                                fontWeight:'bold'
+                            },
+                            barMaxWidth:60,
+                            itemStyle:{
+                                color: {
+                                    type: 'linear',
+                                    x: 0,
+                                    y: 0,
+                                    x2: 0,
+                                    y2: 1,
+                                    colorStops: [{
+                                        offset: 0, color: '#8A2BE2' // 0% 处的颜色
+                                    }, {
+                                        offset: 1, color: '#CCF2FF' // 100% 处的颜色
+                                    }]
+                                }
+                            },
+                            data: {{ goodcomment_y | safe }}
+                        }
+                    ]
+                };
+
+            column2.setOption(option2);
+
+            window.onresize = function() {
+                column2.resize();
+            }
+
+
+            var column3 = echarts.init(document.getElementById('column3'));
+                option3 = {
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow' ,
+                            textStyle: {
+                                color: '#fff',
+                                fontSize: '26'
+                            },
+                        }
+                    },
+                    legend: {
+                        top:'5%',
+                        right:'10%',
+                        data: ['低价榜'],
+                        textStyle:{
+                            fontSize:12,
+                            color:'#808080'
+                        },
+                        icon:'rect'
+                    },
+                    grid: {
+                        top:60,
+                        left:50,
+                        bottom:60,
+                        right:60
+                    },
+                    xAxis: [{
+                        type: 'category',
+                        axisTick:{
+                            show:false
+                        },
+                        axisLine:{
+                            show:false
+                        },
+                        axisLabel:{
+                            color:'#4D4D4D',
+                            fontSize:14,
+                            margin:21,
+                            interval:0,
+                            rotate:0,
+                            fontWeight:'bold'
+                        },
+                        data: {{ price_min_x | safe }},
+
+                    }],
+                    yAxis: [{
+                        name:'单位：个',
+                        nameTextStyle:{
+                            color:'#808080',
+                            fontSize:12,
+                            padding:[0, 0, 0, -5]
+                        },
+                        max: function(value) {
+                            if(value.max<5){
+                                return 5
+                            }else{
+                                return value.max
+                            }
+                        },
+                        type: 'value',
+                        axisLine:{
+                            show:false
+                        },
+                        axisLabel:{
+                            color:'#808080',
+                            fontSize:12,
+                            interval:0,
+                            rotate:0,
+                            margin:5
+                        },
+                        splitLine:{
+                            show:false
+                        },
+                        axisTick:{
+                            show:false
+                        }
+                    }],
+                    series: [
+                        {
+                            name: '低价榜',
+                            type: 'bar',
+                            label:{
+                                show:true,
+                                position:'top',
+                                fontSize:14,
+                                color:'#8A2BE2',
+                                fontWeight:'bold'
+                            },
+                            barMaxWidth:60,
+                            itemStyle:{
+                                color: {
+                                    type: 'linear',
+                                    x: 0,
+                                    y: 0,
+                                    x2: 0,
+                                    y2: 1,
+                                    colorStops: [{
+                                        offset: 0, color: '#8A2BE2' // 0% 处的颜色
+                                    }, {
+                                        offset: 1, color: '#CCF2FF' // 100% 处的颜色
+                                    }]
+                                }
+                            },
+                            data: {{ price_min_y | safe }}
+                        }
+                    ]
+                };
+
+            column3.setOption(option3);
+
+            window.onresize = function() {
+                column3.resize();
+            }
+
+            var column4 = echarts.init(document.getElementById('column4'));
+                option4 = {
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow' ,
+                            textStyle: {
+                                color: '#fff',
+                                fontSize: '26'
+                            },
+                        }
+                    },
+                    legend: {
+                        top:'5%',
+                        right:'10%',
+                        data: ['好评最多前6'],
+                        textStyle:{
+                            fontSize:12,
+                            color:'#808080'
+                        },
+                        icon:'rect'
+                    },
+                    grid: {
+                        top:60,
+                        left:50,
+                        bottom:60,
+                        right:60
+                    },
+                    xAxis: [{
+                        type: 'category',
+                        axisTick:{
+                            show:false
+                        },
+                        axisLine:{
+                            show:false
+                        },
+                        axisLabel:{
+                            color:'#4D4D4D',
+                            fontSize:14,
+                            margin:21,
+                            interval:0,
+                            rotate:0,
+                            fontWeight:'bold'
+                        },
+                        data: {{ good_goods_x | safe }},
+
+                    }],
+                    yAxis: [{
+                        name:'单位：个',
+                        nameTextStyle:{
+                            color:'#808080',
+                            fontSize:12,
+                            padding:[0, 0, 0, -5]
+                        },
+                        max: function(value) {
+                            if(value.max<5){
+                                return 5
+                            }else{
+                                return value.max
+                            }
+                        },
+                        type: 'value',
+                        axisLine:{
+                            show:false
+                        },
+                        axisLabel:{
+                            color:'#808080',
+                            fontSize:12,
+                            interval:0,
+                            rotate:0,
+                            margin:5
+                        },
+                        splitLine:{
+                            show:false
+                        },
+                        axisTick:{
+                            show:false
+                        }
+                    }],
+                    series: [
+                        {
+                            name: '好评最多前6',
+                            type: 'bar',
+                            label:{
+                                show:true,
+                                position:'top',
+                                fontSize:14,
+                                color:'#8A2BE2',
+                                fontWeight:'bold'
+                            },
+                            barMaxWidth:60,
+                            itemStyle:{
+                                color: {
+                                    type: 'linear',
+                                    x: 0,
+                                    y: 0,
+                                    x2: 0,
+                                    y2: 1,
+                                    colorStops: [{
+                                        offset: 0, color: '#8A2BE2' // 0% 处的颜色
+                                    }, {
+                                        offset: 1, color: '#CCF2FF' // 100% 处的颜色
+                                    }]
+                                }
+                            },
+                            data: {{ good_goods_y | safe }}
+                        }
+                    ]
+                };
+
+            column4.setOption(option4);
+
+            window.onresize = function() {
+                column4.resize();
+            }
+
+        var column5 = echarts.init(document.getElementById('column5'));
+                option5 = {
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow' ,
+                            textStyle: {
+                                color: '#fff',
+                                fontSize: '26'
+                            },
+                        }
+                    },
+                    legend: {
+                        top:'5%',
+                        right:'10%',
+                        data: ['差评榜'],
+                        textStyle:{
+                            fontSize:12,
+                            color:'#808080'
+                        },
+                        icon:'rect'
+                    },
+                    grid: {
+                        top:60,
+                        left:50,
+                        bottom:60,
+                        right:60
+                    },
+                    xAxis: [{
+                        type: 'category',
+                        axisTick:{
+                            show:false
+                        },
+                        axisLine:{
+                            show:false
+                        },
+                        axisLabel:{
+                            color:'#4D4D4D',
+                            fontSize:14,
+                            margin:21,
+                            interval:0,
+                            rotate:0,
+                            fontWeight:'bold'
+                        },
+                        data: {{ bad_goods_x | safe }},
+
+                    }],
+                    yAxis: [{
+                        name:'单位：个',
+                        nameTextStyle:{
+                            color:'#808080',
+                            fontSize:12,
+                            padding:[0, 0, 0, -5]
+                        },
+                        max: function(value) {
+                            if(value.max<5){
+                                return 5
+                            }else{
+                                return value.max
+                            }
+                        },
+                        type: 'value',
+                        axisLine:{
+                            show:false
+                        },
+                        axisLabel:{
+                            color:'#808080',
+                            fontSize:12,
+                            interval:0,
+                            rotate:0,
+                            margin:5
+                        },
+                        splitLine:{
+                            show:false
+                        },
+                        axisTick:{
+                            show:false
+                        }
+                    }],
+                    series: [
+                        {
+                            name: '差评榜',
+                            type: 'bar',
+                            label:{
+                                show:true,
+                                position:'top',
+                                fontSize:14,
+                                color:'#8A2BE2',
+                                fontWeight:'bold'
+                            },
+                            barMaxWidth:60,
+                            itemStyle:{
+                                color: {
+                                    type: 'linear',
+                                    x: 0,
+                                    y: 0,
+                                    x2: 0,
+                                    y2: 1,
+                                    colorStops: [{
+                                        offset: 0, color: '#8A2BE2' // 0% 处的颜色
+                                    }, {
+                                        offset: 1, color: '#CCF2FF' // 100% 处的颜色
+                                    }]
+                                }
+                            },
+                            data: {{ bad_goods_y | safe }}
+                        }
+                    ]
+                };
+
+            column5.setOption(option5);
+
+            window.onresize = function() {
+                column5.resize();
+            }
+
+});
+  // 处理搜索按钮单击事件
+            document.getElementById('search-btn').addEventListener('click', function() {
+
+                let search_data = document.getElementById('search-input').value;
+
+                fetch('/bijia/', {  // 发送网络请求时URL应该加上斜线
+                    method: 'POST',
+                    body: JSON.stringify({'search_data': search_data}),
+                    headers: {
+                        'Content-type': 'application/json; charset=UTF-8',
+
+                    }
+                }).then(response => {
+                    return response.json(); // 将响应数据解析为JavaScript对象
+                }).then(data => {
+                    // 对象字段名与后端一致，可以直接通过属性名获取对应的数据值
+                    let price_goods = data.price_goods;
+                    let price_x = data.price_x;
+                    let price_y = data.price_y;
+                    console.log(price_goods)
+                    // 根据获取到的数据更新页面显示
+                    let goodcomment_goods =data.goodcomment_goods;
+                    let goodcomment_x =data.goodcomment_x;
+                    let goodcomment_y =data.goodcomment_y;
+                    console.log(goodcomment_goods)
+                    let price_min_goods =data.price_min_goods;
+                    let price_min_x = data.price_min_x;
+                    let price_min_y = data.price_min_y;
+                    console.log(price_min_goods)
+                    let good_goods = data.good_goods
+                    let good_goods_x = data.good_goods_x;
+                    let good_goods_y = data.good_goods_y;
+                    console.log(good_goods )
+                    let bad_goods = data.bad_goods;
+                    let bad_goods_x = data.bad_goods_x;
+                    let bad_goods_y = data.bad_goods_y;
+                    console.log(bad_goods)
+                    let liHtml = '';
+                    for (let i = 0; i < price_goods.length; i++) {
+                        liHtml += '<li><p><a href="' + price_goods[i]['goods_url'] + '" target="_blank">' + price_goods[i]['jd_name'] + '</a></p>' +
+                                  '<span>店名：' + price_goods[i]['jd_shop'] + '</span>' +
+                                  '<span>价格：' + price_goods[i]['jd_price'] + '元</span></li>' +
+                                  '<hr>';
+                    }
+
+                    document.querySelector('.pear-card-status').innerHTML = liHtml;
+
+                    // 更新ECharts图表
+                    var column1 = echarts.getInstanceByDom(document.getElementById('column1'));
+                    column1.setOption({
+                        xAxis: [{
+                            data: price_x
+                        }],
+                        series: [{
+                            data: price_y
+                        }]
+                    });
+                  let goodcommentHtml = '';
+                    for (let i = 0; i < goodcomment_goods .length; i++) {
+                        goodcommentHtml += '<li><p><a href="' + goodcomment_goods[i]['goods_url'] + '" target="_blank">' + goodcomment_goods[i]['jd_name'] + '</a></p>' +
+                                  '<span>店名：' + goodcomment_goods[i]['jd_shop'] + '</span>' +
+                                  '<span>好评数：' + goodcomment_goods[i]['jd_goodcomment'] + '个</span></li>' +
+                                  '<hr>';
+                    }
+                    document.querySelector('.pear-card-status1').innerHTML = goodcommentHtml;
+                  var column2 = echarts.getInstanceByDom(document.getElementById('column2'));
+                    column2.setOption({
+                        xAxis: [{
+                            data: goodcomment_x
+                        }],
+                        series: [{
+                            data: goodcomment_y
+                        }]
+                    });
+                  let price_min_goodsHtml = '';
+                    for (let i = 0; i < price_min_goods .length; i++) {
+                       price_min_goodsHtml += '<li><p><a href="' + price_min_goods[i]['goods_url'] + '" target="_blank">' + price_min_goods[i]['jd_name'] + '</a></p>' +
+                                  '<span>店名：' + price_min_goods[i]['jd_shop'] + '</span>' +
+                                  '<span>价格：' + price_min_goods[i]['jd_price'] + '元</span></li>' +
+                                  '<hr>';
+                    }
+                    document.querySelector('.pear-card-status2').innerHTML = price_min_goodsHtml ;
+                  var column3 = echarts.getInstanceByDom(document.getElementById('column3'));
+                    column3.setOption({
+                        xAxis: [{
+                            data:price_min_x
+                        }],
+                        series: [{
+                            data: price_min_y
+                        }]
+                    });
+
+                    let good_goodsHtml = '';
+                    for (let i = 0; i < good_goods .length; i++) {
+                        good_goodsHtml += '<li><p><a href="' + good_goods [i]['goods_url'] + '" target="_blank">' + good_goods [i]['jd_name'] + '</a></p>' +
+                                  '<span>店名：' + good_goods [i]['jd_shop'] + '</span>' +
+                                  '<span>好评数：' + good_goods [i]['jd_goodcomment'] + '个</span></li>' +
+                                  '<hr>';
+                    }
+                    document.querySelector('.pear-card-status3').innerHTML = good_goodsHtml ;
+                  var column4 = echarts.getInstanceByDom(document.getElementById('column4'));
+                    column4.setOption({
+                        xAxis: [{
+                            data: good_goods_x
+                        }],
+                        series: [{
+                            data: good_goods_y
+                        }]
+                    });
+                  let bad_goodsHtml = '';
+                    for (let i = 0; i < bad_goods.length; i++) {
+                        bad_goodsHtml += '<li><p><a href="' + bad_goods[i]['goods_url'] + '" target="_blank">' + bad_goods[i]['jd_name'] + '</a></p>' +
+                                  '<span>店名：' + bad_goods[i]['jd_shop'] + '</span>' +
+                                  '<span>差评数：' + bad_goods[i]['jd_poorcomment'] + '个</span></li>' +
+                                  '<hr>';
+                    }
+                    document.querySelector('.pear-card-status4').innerHTML = bad_goodsHtml ;
+                  var column5 = echarts.getInstanceByDom(document.getElementById('column5'));
+                    column5.setOption({
+                        xAxis: [{
+                            data: bad_goods_x
+                        }],
+                        series: [{
+                            data: bad_goods_y
+                        }]
+                    });
+                });
+            });
+    </script>
+  </body>
+</html>

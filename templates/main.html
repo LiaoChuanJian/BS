@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>主页</title>
+		<link rel="stylesheet" href="/static/component/pear/css/pear.css" />
+	</head>
+	<body class="pear-container">
+		<div class="layui-card">
+			<div class="layui-card-body">
+				<form class="layui-form" action="">
+					<div class="layui-form-item">
+						<label class="layui-form-label">搜索关键词</label>
+						<div class="layui-input-inline">
+							<input type="text" name="key" placeholder="" class="layui-input">
+						</div>
+						<button class="pear-btn pear-btn-md pear-btn-primary" lay-submit lay-filter="user-query">
+							<i class="layui-icon layui-icon-search"></i>
+							查询
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="layui-card">
+			<div class="layui-card-body">
+				<table id="user-table" lay-filter="user-table"></table>
+			</div>
+		</div>
+
+{#		<script type="text/html" id="user-toolbar">#}
+{#			<button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add">#}
+{#				<i class="layui-icon layui-icon-add-1"></i>#}
+{#				关注#}
+{#			</button>#}
+{#			<button class="pear-btn pear-btn-danger pear-btn-md" lay-event="batchRemove">#}
+{#				<i class="layui-icon layui-icon-delete"></i>#}
+{#				删除#}
+{#			</button>#}
+{#		</script>#}
+
+		<script type="text/html" id="user-bar">
+			<button class="pear-btn pear-btn-primary pear-btn-sm" lay-event="follow"><i
+					class="layui-icon layui-icon-edit"></i>关注</button>
+			<a class="pear-btn pear-btn-danger pear-btn-sm" href="{% verbatim %} {{ d.goods_url }} {% endverbatim %}" target="_blank"><i
+					class="layui-icon layui-icon-cart-simple"></i>访问原始链接</a>
+{#			<a class="pear-btn pear-btn-sm" href="{% verbatim %} {{ d.goods_url }} {% endverbatim %}" target="_blank"><i class="layui-icon layui-icon-triangle-d"></i>访问原始链接</a>#}
+		</script>
+
+{#		<script type="text/html" id="user-enable">#}
+{#			<input type="checkbox" name="enable" value="{{d.id}}" lay-skin="switch" lay-text="启用|禁用" lay-filter="user-enable"#}
+{#				checked="{{ d.enable == 0 ? 'true' : 'false' }}">#}
+{#		</script>#}
+
+{#		<script type="text/html" id="user-sex">#}
+{#		{{#if (d.sex == 1) { }}#}
+{#			<span>男</span>#}
+{#			{{# }else if(d.sex == 2){ }}#}
+{#				<span>女</span>#}
+{#				{{# } }}#}
+{#		</script>#}
+
+{#		<script type="text/html" id="user-login">#}
+{#		{{#if (d.login == 0) { }}#}
+{#			<span>在线</span>#}
+{#			{{# }else if(d.sex == 1){ }}#}
+{#				<span>离线</span>#}
+{#				{{# } }}#}
+{#		</script>#}
+
+{#		<script type="text/html" id="user-createTime">#}
+{#		{{layui.util.toDateString(d.createTime, 'yyyy-MM-dd')}}#}
+{#		</script>#}
+{##}
+{#		<div style="display: none;">#}
+{#			<div class="layer-top">#}
+{#				<br />#}
+{#				<h3>上侧弹层内容...</h3>#}
+{#			</div>#}
+{#		</div>#}
+
+		<script src="/static/component/layui/layui.js"></script>
+		<script src="/static/component/pear/pear.js"></script>
+
+		<script>
+			layui.use(['table', 'form', 'jquery', 'drawer', 'layer'], function() {
+				let table = layui.table;
+				let form = layui.form;
+				let $ = layui.jquery;
+				let drawer = layui.drawer;
+				let layer = layui.layer;
+
+				let cols = [
+					[
+						{
+							title: '标题',
+							field: 'jd_name',
+							align: 'center',
+							width: 600
+						},
+						{
+							title: '好评',
+							field: 'jd_goodcomment',
+							align: 'center'
+						},
+						{
+							title: '价格',
+							field: 'jd_price',
+							align: 'center',
+							width: 80,
+						},
+						{
+							title: '店名',
+							field: 'jd_shop',
+							align: 'center'
+						},
+						{
+							title: '操作',
+							toolbar: '#user-bar',
+							align: 'left',
+							width: 260,
+							fixed: 'right'
+						}
+					]
+				]
+
+				table.render({
+					elem: '#user-table',
+					url: '/get_product',
+					cols: cols,
+					skin: 'line',
+					{#toolbar: '#user-toolbar',#}
+					limits: [10, 15, 20, 25, 50, 100],
+                    limit: 15,
+                    page: true,
+				});
+
+				table.on('tool(user-table)', function(obj) {
+                    console.log(obj.data)
+                    if (obj.event === 'follow') {
+                        $.ajax({
+                            type: 'POST',
+                            url: '/go_follow',//发送请求
+                            data: JSON.stringify({"gid":obj.data.id}),
+                            dataType: "json",
+                            success: function (result) {
+                                console.log(result.code);
+                                if (result.code == 0) {
+                                    alert("成功！")
+                                    window.location.reload();
+                                    {#window.location.href="/follow";#}
+                                } else {
+                                    alert(result.message)
+                                }
+                            }
+                        });
+					}
+				});
+
+				form.on('submit(user-query)', function(data) {
+					table.reload('user-table', {
+						where: data.field
+					})
+					return false;
+				});
+
+
+
+				window.add = function() {
+					drawer.open({
+						direction: "top",
+						dom: ".layer-top",
+						distance: "30%"
+					});
+				}
+
+				window.edit = function(obj) {
+
+
+				}
+
+				window.remove = function(obj) {
+					layer.confirm('确定要删除该用户', {
+						icon: 3,
+						title: '提示'
+					}, function(index) {
+						layer.close(index);
+						let loading = layer.load();
+						$.ajax({
+							url: MODULE_PATH + "remove/" + obj.data['userId'],
+							dataType: 'json',
+							type: 'delete',
+							success: function(result) {
+								layer.close(loading);
+								if (result.success) {
+									layer.msg(result.msg, {
+										icon: 1,
+										time: 1000
+									}, function() {
+										obj.del();
+									});
+								} else {
+									layer.msg(result.msg, {
+										icon: 2,
+										time: 1000
+									});
+								}
+							}
+						})
+					});
+				}
+
+				window.batchRemove = function(obj) {
+					let data = table.checkStatus(obj.config.id).data;
+					if (data.length === 0) {
+						layer.msg("未选中数据", {
+							icon: 3,
+							time: 1000
+						});
+						return false;
+					}
+					let ids = "";
+					for (let i = 0; i < data.length; i++) {
+						ids += data[i].userId + ",";
+					}
+					ids = ids.substr(0, ids.length - 1);
+					layer.confirm('确定要删除这些用户', {
+						icon: 3,
+						title: '提示'
+					}, function(index) {
+						layer.close(index);
+						let loading = layer.load();
+						$.ajax({
+							url: MODULE_PATH + "batchRemove/" + ids,
+							dataType: 'json',
+							type: 'delete',
+							success: function(result) {
+								layer.close(loading);
+								if (result.success) {
+									layer.msg(result.msg, {
+										icon: 1,
+										time: 1000
+									}, function() {
+										table.reload('user-table');
+									});
+								} else {
+									layer.msg(result.msg, {
+										icon: 2,
+										time: 1000
+									});
+								}
+							}
+						})
+					});
+				}
+
+				window.refresh = function(param) {
+					table.reload('user-table');
+				}
+			})
+		</script>
+	</body>
+</html>
